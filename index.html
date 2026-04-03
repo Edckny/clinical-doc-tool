@@ -1,0 +1,640 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>PsyDoc Suite | Clinical Documentation Tool</title>
+    <!-- Google Fonts & simple styling -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            background: #eef2f7;
+            font-family: 'Inter', sans-serif;
+            padding: 2rem 1.5rem;
+            color: #1e2a3e;
+        }
+        .app-container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        h1 {
+            font-size: 1.9rem;
+            font-weight: 600;
+            background: linear-gradient(135deg, #1e4b6e, #2c7da0);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            letter-spacing: -0.3px;
+            margin-bottom: 0.25rem;
+        }
+        .sub {
+            color: #2c5f7a;
+            margin-bottom: 2rem;
+            border-left: 4px solid #2c7da0;
+            padding-left: 1rem;
+            font-weight: 500;
+        }
+        /* tabs */
+        .tabs {
+            display: flex;
+            gap: 0.75rem;
+            flex-wrap: wrap;
+            margin-bottom: 2rem;
+            border-bottom: 1px solid #cbd5e1;
+            padding-bottom: 0.75rem;
+        }
+        .tab-btn {
+            background: transparent;
+            border: none;
+            font-size: 1rem;
+            font-weight: 600;
+            padding: 0.6rem 1.5rem;
+            border-radius: 40px;
+            cursor: pointer;
+            transition: all 0.2s;
+            color: #2c5f7a;
+            background: #f1f5f9;
+        }
+        .tab-btn.active {
+            background: #1e4b6e;
+            color: white;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+        }
+        .tab-pane {
+            display: none;
+            animation: fade 0.2s ease;
+        }
+        .tab-pane.active-pane {
+            display: block;
+        }
+        @keyframes fade {
+            from { opacity: 0; transform: translateY(5px);}
+            to { opacity: 1; transform: translateY(0);}
+        }
+        /* form styling */
+        .form-card {
+            background: white;
+            border-radius: 28px;
+            box-shadow: 0 12px 30px rgba(0,0,0,0.05);
+            padding: 1.8rem 2rem;
+            margin-bottom: 2rem;
+        }
+        .form-section {
+            margin-bottom: 2rem;
+            border-bottom: 1px solid #e2e8f0;
+            padding-bottom: 1.5rem;
+        }
+        .form-section h3 {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: #0f3b4f;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .grid-2 {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.2rem;
+        }
+        .field-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+        label {
+            font-weight: 600;
+            font-size: 0.85rem;
+            color: #2c3e50;
+            letter-spacing: 0.3px;
+        }
+        input, select, textarea {
+            padding: 10px 12px;
+            border: 1px solid #cbd5e1;
+            border-radius: 14px;
+            font-family: 'Inter', monospace;
+            font-size: 0.9rem;
+            transition: 0.2s;
+            background: #fefefe;
+        }
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: #2c7da0;
+            box-shadow: 0 0 0 3px rgba(44,125,160,0.2);
+        }
+        .checkbox-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            align-items: center;
+            margin-top: 6px;
+        }
+        .checkbox-group label {
+            font-weight: normal;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .radio-group {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+        .inline-input {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        button {
+            background: #1e4b6e;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 40px;
+            font-weight: 600;
+            color: white;
+            cursor: pointer;
+            transition: 0.2s;
+            font-size: 0.85rem;
+        }
+        button.secondary {
+            background: #e2e8f0;
+            color: #1e4b6e;
+        }
+        button.copy-btn {
+            background: #2c7da0;
+        }
+        .report-area {
+            background: #f8fafc;
+            border-radius: 20px;
+            padding: 1.2rem;
+            margin-top: 1.5rem;
+            border: 1px solid #cbd5e1;
+        }
+        .report-text {
+            background: #0f172a;
+            color: #e2e8f0;
+            padding: 1.2rem;
+            border-radius: 16px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.85rem;
+            white-space: pre-wrap;
+            max-height: 400px;
+            overflow: auto;
+        }
+        .flex-btns {
+            display: flex;
+            gap: 12px;
+            margin-top: 12px;
+            justify-content: flex-end;
+        }
+        hr {
+            margin: 12px 0;
+        }
+        .family-details {
+            background: #f9f9ff;
+            padding: 1rem;
+            border-radius: 20px;
+            margin-top: 10px;
+        }
+        .badge {
+            font-size: 0.7rem;
+        }
+        @media (max-width: 700px) {
+            .form-card {
+                padding: 1.2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="app-container">
+    <h1>📋 PsyDoc Clinical Suite</h1>
+    <div class="sub">Structured documentation · Initial interview · Progress notes · Discharge summary</div>
+
+    <!-- TABS -->
+    <div class="tabs">
+        <button class="tab-btn active" data-tab="initial">📝 Initial Interview</button>
+        <button class="tab-btn" data-tab="progress">📈 Progress Note</button>
+        <button class="tab-btn" data-tab="discharge">📄 Discharge Summary</button>
+    </div>
+
+    <!-- =========================  INITIAL INTERVIEW TAB ========================= -->
+    <div id="initial" class="tab-pane active-pane">
+        <div class="form-card">
+            <form id="initialForm">
+                <!-- Clinical info block -->
+                <div class="form-section">
+                    <h3>📌 Clinical Information</h3>
+                    <div class="grid-2">
+                        <div class="field-group">
+                            <label>Informal admission to SH/3C on (DD/MM/YYYY)</label>
+                            <input type="text" id="admissionDate" placeholder="e.g., 15/03/2026">
+                        </div>
+                        <div class="field-group">
+                            <label>From</label>
+                            <select id="admissionFrom">
+                                <option value="">-- Select --</option>
+                                <option value="PWH AED">PWH AED</option>
+                                <option value="PWH SOPD">PWH SOPD</option>
+                                <option value="SH PDH">SH PDH</option>
+                                <option value="NDH AED">NDH AED</option>
+                                <option value="Others">Others: (specify)</option>
+                            </select>
+                            <input type="text" id="admissionFromOther" placeholder="If Others, specify" style="margin-top:5px; display:none;">
+                        </div>
+                        <div class="field-group">
+                            <label>Admission reason</label>
+                            <input type="text" id="admissionReason" placeholder="e.g., acute psychotic symptoms">
+                        </div>
+                    </div>
+                    <div class="field-group" style="margin-top: 10px;">
+                        <label>Initial interview was conducted on (Today)</label>
+                        <input type="text" id="interviewDate" placeholder="DD/MM/YYYY">
+                    </div>
+                </div>
+
+                <!-- Imp + SCS -->
+                <div class="form-section">
+                    <h3>🧠 Diagnosis & SCS</h3>
+                    <div class="field-group"><label>Imp (select ≥1)</label>
+                        <div class="checkbox-group" id="impGroup">
+                            <label><input type="checkbox" value="Schizophrenia"> Schizophrenia</label>
+                            <label><input type="checkbox" value="Schizoaffective Disorder"> Schizoaffective Disorder</label>
+                            <label><input type="checkbox" value="Depression"> Depression</label>
+                            <label><input type="checkbox" value="BAD"> BAD</label>
+                            <label><input type="checkbox" value="Anxiety"> Anxiety</label>
+                            <label><input type="checkbox" value="OCD"> OCD</label>
+                            <label><input type="checkbox" value="Adjustment Disorder"> Adjustment Disorder</label>
+                            <label><input type="checkbox" value="MR"> MR</label>
+                            <label><input type="checkbox" value="ASD"> ASD</label>
+                            <label><input type="checkbox" value="Substance Abuse"> Substance Abuse</label>
+                            <label><input type="checkbox" value="Alcoholism"> Alcoholism</label>
+                            <label><input type="checkbox" value="Others"> Others: <input type="text" id="impOthers" placeholder="specify" style="width:140px;"></label>
+                        </div>
+                    </div>
+                    <div class="grid-2" style="margin-top: 12px;">
+                        <div class="field-group"><label>SCS</label>
+                            <select id="scsSelect">
+                                <option value="CC">CC</option>
+                                <option value="SC">SC</option>
+                                <option value="SC(ex-IC)">SC(ex-IC)</option>
+                                <option value="IC">IC</option>
+                            </select>
+                        </div>
+                        <div id="scsReasonYearBox" style="display: none;" class="field-group">
+                            <label>Reason & Year (if SC/SC(ex-IC)/IC)</label>
+                            <input type="text" id="scsReason" placeholder="Reason">
+                            <input type="text" id="scsYear" placeholder="Year (e.g., 2022)">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Fall precaution -->
+                <div class="form-section">
+                    <h3>⚠️ Fall precaution</h3>
+                    <div class="radio-group"><label><input type="radio" name="fallPrecaution" value="Yes"> Yes</label><label><input type="radio" name="fallPrecaution" value="No" checked> No</label></div>
+                    <div class="field-group"><label>Morse Fall Scale ( /125 on admission)</label><input type="text" id="morseScale" placeholder="e.g., 45"></div>
+                </div>
+
+                <!-- Social Background (dynamic) -->
+                <div class="form-section">
+                    <h3>🏠 Social Background</h3>
+                    <div class="field-group"><label>Living situation</label>
+                        <div class="radio-group"><label><input type="radio" name="livingType" value="alone" checked> Alone</label><label><input type="radio" name="livingType" value="family"> With family</label></div>
+                    </div>
+                    <div id="familyDetails" style="display: none;" class="family-details">
+                        <div class="grid-2">
+                            <label><input type="checkbox" id="familyFather"> Father</label>
+                            <label><input type="checkbox" id="familyMother"> Mother</label>
+                            <div><label>Elder brother(s) #</label><input type="number" id="elderBro" min="0" value="0" style="width:70px;"></div>
+                            <div><label>Elder sister(s) #</label><input type="number" id="elderSis" min="0" value="0" style="width:70px;"></div>
+                            <div><label>Younger brother(s) #</label><input type="number" id="youngerBro" min="0" value="0" style="width:70px;"></div>
+                            <div><label>Younger sister(s) #</label><input type="number" id="youngerSis" min="0" value="0" style="width:70px;"></div>
+                            <div><label>Son(s) #</label><input type="number" id="sons" min="0" value="0" style="width:70px;"></div>
+                            <div><label>Daughter(s) #</label><input type="number" id="daughters" min="0" value="0" style="width:70px;"></div>
+                            <div class="field-group"><label>Others (family)</label><input type="text" id="familyOthers" placeholder="e.g., grandparent"></div>
+                        </div>
+                    </div>
+                    <div class="field-group"><label>Regular visited by</label><input type="text" id="regularVisited" placeholder="e.g., social worker, sister"></div>
+                </div>
+
+                <!-- Work Status -->
+                <div class="form-section">
+                    <h3>💼 Work Status</h3>
+                    <div class="field-group"><label>Educated up to</label><input type="text" id="education" placeholder="e.g., Form 5 / University"></div>
+                    <div class="field-group"><label>Employment pattern</label>
+                        <select id="employmentPattern">
+                            <option value="never">Never gainfully employed</option>
+                            <option value="previously">Previously working as ...</option>
+                        </select>
+                    </div>
+                    <div id="prevWorkFields" style="display: none;">
+                        <div class="grid-2">
+                            <div><label>Previously working as</label><input type="text" id="prevJobRole" placeholder="Job title"></div>
+                            <div><label>Longest job as</label><input type="text" id="longestJob" placeholder="role"></div>
+                            <div><label>Lasted for</label><input type="text" id="longestDuration" placeholder="e.g., 5 years"></div>
+                            <div><label>Latest job as</label><input type="text" id="latestJob" placeholder="role"></div>
+                            <div><label>Lasted for</label><input type="text" id="latestDuration" placeholder="duration"></div>
+                            <div><label>Usually quitted job for reasons</label><input type="text" id="quitReasons" placeholder="e.g., stress, conflict"></div>
+                        </div>
+                    </div>
+                    <div class="field-group"><label>Current status</label>
+                        <select id="currentStatus">
+                            <option value="">-- select --</option>
+                            <option value="unemployed">Unemployed for (duration)</option>
+                            <option value="sickleave">On sick leave</option>
+                            <option value="resigned">Just resigned before admission</option>
+                        </select>
+                        <input type="text" id="currentStatusDetail" placeholder="duration or details" style="margin-top:6px;">
+                    </div>
+                    <div class="field-group"><label>Premorbid functioning</label><textarea rows="2" id="premorbid" placeholder="describe functioning"></textarea></div>
+                </div>
+
+                <!-- Past Psy Hx -->
+                <div class="form-section">
+                    <h3>📜 Past Psychiatric History</h3>
+                    <div class="radio-group"><label><input type="radio" name="pastPsyType" value="New"> New to MHS</label><label><input type="radio" name="pastPsyType" value="Private"> Known to private psy</label><label><input type="radio" name="pastPsyType" value="MHS"> Known to MHS</label></div>
+                    <div id="sinceYearBlock" style="display:none;"><label>Since year (YYYY)</label><input type="text" id="sinceYear" placeholder="e.g., 2019"></div>
+                    <div class="grid-2"><div><label>Presented with</label><input type="text" id="presentedWith" placeholder="symptoms"></div><div><label>Precipitated by</label><input type="text" id="precipitatedBy" placeholder="stressors"></div></div>
+                    <div><label>Others (past hx)</label><input type="text" id="pastOthers" placeholder="additional info" style="width:100%"></div>
+                    <div class="field-group"><label>Community course</label>
+                        <select id="communityCourse">
+                            <option value="">-- select --</option>
+                            <option value="well_support">Maintained well in the community with ... support</option>
+                            <option value="freq_admissions">with frequent admissions due to ...</option>
+                        </select>
+                        <input type="text" id="courseDetail" placeholder="specify support or reason" style="margin-top:6px;">
+                    </div>
+                </div>
+
+                <!-- Last Admission & Current Admission -->
+                <div class="form-section">
+                    <h3>🏥 Admission History</h3>
+                    <div class="grid-2"><div><label>Last Admission to</label><select id="lastHospital"><option value="">-- select --</option><option>SH</option><option>TPH</option><option>NDH</option></select></div>
+                    <div><label>Date range (DD/MM/YYYY - DD/MM/YYYY)</label><input type="text" id="lastAdmRange" placeholder="e.g., 10/01/2025 - 20/02/2025"></div></div>
+                    <div><label>Last admission reason</label><input type="text" id="lastAdmReason" style="width:100%"></div>
+                    <div class="field-group"><label>Current Admission: Reason</label><textarea rows="2" id="currentAdmReason" placeholder="reason for current admission"></textarea></div>
+                </div>
+
+                <div class="form-section"><h3>📝 Remarks</h3><textarea rows="2" id="remarksInitial" placeholder="additional remarks" style="width:100%"></textarea></div>
+            </form>
+            <div class="flex-btns"><button type="button" id="genInitialReport">📄 Generate Report</button></div>
+            <div id="initialReportArea" class="report-area" style="display:none;">
+                <div class="report-text" id="initialReportText"></div>
+                <div class="flex-btns"><button class="copy-btn" data-copy="initialReportText">📋 Copy to Clipboard</button></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- =========================  PROGRESS NOTE TAB ========================= -->
+    <div id="progress" class="tab-pane">
+        <div class="form-card">
+            <h3>📈 Progress Note</h3>
+            <div class="grid-2"><div class="field-group"><label>Date (DD/MM/YYYY)</label><input type="text" id="progressDate" placeholder="e.g., 03/04/2026"></div></div>
+            <div class="field-group"><label>Subjective (patient report)</label><textarea rows="2" id="subjective" placeholder="patient's words, symptoms"></textarea></div>
+            <div class="field-group"><label>Objective (MSE, behaviour, vitals)</label><textarea rows="2" id="objective" placeholder="appearance, mood, cognition, sleep, appetite"></textarea></div>
+            <div class="field-group"><label>Assessment (clinical impression / risk)</label><textarea rows="2" id="assessment" placeholder="formulation, insight, risk"></textarea></div>
+            <div class="field-group"><label>Plan (medications, therapy, follow-up)</label><textarea rows="2" id="plan" placeholder="changes, investigations, appointments"></textarea></div>
+            <div class="flex-btns"><button id="genProgressReport">Generate Report</button></div>
+            <div id="progressReportArea" class="report-area" style="display:none;"><div class="report-text" id="progressReportText"></div><div class="flex-btns"><button class="copy-btn" data-copy="progressReportText">📋 Copy</button></div></div>
+        </div>
+    </div>
+
+    <!-- =========================  DISCHARGE SUMMARY TAB ========================= -->
+    <div id="discharge" class="tab-pane">
+        <div class="form-card">
+            <h3>📄 Discharge Summary</h3>
+            <div class="grid-2"><div class="field-group"><label>Admission Date (DD/MM/YYYY)</label><input type="text" id="dischargeAdmDate" placeholder="DD/MM/YYYY"></div>
+            <div class="field-group"><label>Discharge Date (DD/MM/YYYY)</label><input type="text" id="dischargeDate" placeholder="DD/MM/YYYY"></div></div>
+            <div class="field-group"><label>Diagnosis at discharge</label><input type="text" id="dischargeDiagnosis" placeholder="e.g., Schizophrenia, remission"></div>
+            <div class="field-group"><label>Reason for discharge</label><textarea rows="2" id="dischargeReason" placeholder="improved, transferred, absconded, etc"></textarea></div>
+            <div class="field-group"><label>Medications at discharge</label><textarea rows="2" id="dischargeMeds" placeholder="drugs + dosage"></textarea></div>
+            <div class="field-group"><label>Follow-up plan</label><textarea rows="2" id="followupPlan" placeholder="OPD appointment, CMHC, family support"></textarea></div>
+            <div class="field-group"><label>Condition on discharge</label><textarea rows="2" id="conditionOnDischarge" placeholder="stable, mild symptoms, insight fair"></textarea></div>
+            <div class="field-group"><label>Additional remarks</label><textarea rows="2" id="dischargeRemarks"></textarea></div>
+            <div class="flex-btns"><button id="genDischargeReport">Generate Report</button></div>
+            <div id="dischargeReportArea" class="report-area" style="display:none;"><div class="report-text" id="dischargeReportText"></div><div class="flex-btns"><button class="copy-btn" data-copy="dischargeReportText">📋 Copy</button></div></div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Helper: dynamic UI toggles & initial interview report generation (advanced)
+    // date default today
+    const today = new Date();
+    const dd = String(today.getDate()).padStart(2,'0');
+    const mm = String(today.getMonth()+1).padStart(2,'0');
+    const yyyy = today.getFullYear();
+    document.getElementById('interviewDate').value = `${dd}/${mm}/${yyyy}`;
+
+    // Admission from Others toggle
+    const fromSelect = document.getElementById('admissionFrom');
+    const otherInput = document.getElementById('admissionFromOther');
+    fromSelect.addEventListener('change',()=>{ otherInput.style.display = fromSelect.value === 'Others' ? 'block' : 'none'; });
+
+    // SCS conditional fields
+    const scsSelect = document.getElementById('scsSelect');
+    const scsBox = document.getElementById('scsReasonYearBox');
+    function toggleScsFields(){ scsBox.style.display = (scsSelect.value === 'SC' || scsSelect.value === 'SC(ex-IC)' || scsSelect.value === 'IC') ? 'flex' : 'none'; }
+    scsSelect.addEventListener('change', toggleScsFields); toggleScsFields();
+
+    // living with family toggle
+    const livingRadios = document.querySelectorAll('input[name="livingType"]');
+    const familyDiv = document.getElementById('familyDetails');
+    livingRadios.forEach(r => r.addEventListener('change',()=>{ familyDiv.style.display = document.querySelector('input[name="livingType"]:checked').value === 'family' ? 'block' : 'none'; }));
+    // employment pattern toggle
+    const empPattern = document.getElementById('employmentPattern');
+    const prevWorkDiv = document.getElementById('prevWorkFields');
+    empPattern.addEventListener('change',()=>{ prevWorkDiv.style.display = empPattern.value === 'previously' ? 'block' : 'none'; });
+    // Past Psy since year
+    const pastRadios = document.querySelectorAll('input[name="pastPsyType"]');
+    const sinceBlock = document.getElementById('sinceYearBlock');
+    pastRadios.forEach(r=>r.addEventListener('change',()=>{ const val = document.querySelector('input[name="pastPsyType"]:checked')?.value; sinceBlock.style.display = (val === 'Private' || val === 'MHS') ? 'block' : 'none'; }));
+
+    // GENERATE INITIAL REPORT
+    function buildInitialReport() {
+        let lines = [];
+        // admission sentence
+        let admDate = document.getElementById('admissionDate').value.trim();
+        let fromVal = fromSelect.value;
+        if(fromVal === 'Others') fromVal = otherInput.value.trim() || 'Others';
+        let admReason = document.getElementById('admissionReason').value.trim();
+        if(admDate && fromVal && admReason) lines.push(`Informal admission to SH/3C on ${admDate} from ${fromVal} for ${admReason}.`);
+        else if(admDate && fromVal) lines.push(`Informal admission to SH/3C on ${admDate} from ${fromVal}.`);
+        let interviewDateVal = document.getElementById('interviewDate').value.trim();
+        if(interviewDateVal) lines.push(`Initial interview was conducted on ${interviewDateVal}.`);
+        // Imp
+        let impSelected = Array.from(document.querySelectorAll('#impGroup input[type="checkbox"]:checked')).map(cb=>{ if(cb.value==='Others') return `Others: ${document.getElementById('impOthers').value.trim()}`; else return cb.value; }).filter(v=>v);
+        if(impSelected.length) lines.push(`Imp: ${impSelected.join(', ')}.`);
+        // SCS
+        let scsVal = scsSelect.value;
+        if(scsVal){
+            let scsOut = `SCS: ${scsVal}`;
+            if((scsVal==='SC'||scsVal==='SC(ex-IC)'||scsVal==='IC')){
+                let reason = document.getElementById('scsReason').value.trim();
+                let year = document.getElementById('scsYear').value.trim();
+                if(reason || year) scsOut += ` (${reason}${reason && year ? ', ' : ''}${year})`;
+            }
+            lines.push(scsOut);
+        }
+        // Fall precaution + morse
+        let fallRad = document.querySelector('input[name="fallPrecaution"]:checked')?.value;
+        let morse = document.getElementById('morseScale').value.trim();
+        if(fallRad) lines.push(`Fall precaution: ${fallRad}${morse ? ` (Morse Fall Scale ${morse}/125 on admission)` : ''}.`);
+        // Social Background
+        let livingType = document.querySelector('input[name="livingType"]:checked')?.value;
+        let livingStr = '';
+        if(livingType === 'alone') livingStr = 'Living alone.';
+        else {
+            let members = [];
+            if(document.getElementById('familyFather').checked) members.push('father');
+            if(document.getElementById('familyMother').checked) members.push('mother');
+            let eb = parseInt(document.getElementById('elderBro').value)||0; if(eb>0) members.push(`${eb} elder brother${eb>1?'s':''}`);
+            let es = parseInt(document.getElementById('elderSis').value)||0; if(es>0) members.push(`${es} elder sister${es>1?'s':''}`);
+            let yb = parseInt(document.getElementById('youngerBro').value)||0; if(yb>0) members.push(`${yb} younger brother${yb>1?'s':''}`);
+            let ys = parseInt(document.getElementById('youngerSis').value)||0; if(ys>0) members.push(`${ys} younger sister${ys>1?'s':''}`);
+            let sons = parseInt(document.getElementById('sons').value)||0; if(sons>0) members.push(`${sons} son${sons>1?'s':''}`);
+            let daughters = parseInt(document.getElementById('daughters').value)||0; if(daughters>0) members.push(`${daughters} daughter${daughters>1?'s':''}`);
+            let famOthers = document.getElementById('familyOthers').value.trim(); if(famOthers) members.push(famOthers);
+            if(members.length) livingStr = `Living with family: ${members.join(', ')}.`;
+            else livingStr = `Living with family.`;
+        }
+        if(livingStr) lines.push(livingStr);
+        let regVisited = document.getElementById('regularVisited').value.trim();
+        if(regVisited) lines.push(`Regular visited by: ${regVisited}.`);
+        // Work Status
+        let edu = document.getElementById('education').value.trim();
+        if(edu) lines.push(`Educated up to ${edu}.`);
+        let empPatternVal = document.getElementById('employmentPattern').value;
+        if(empPatternVal === 'never') lines.push(`Never gainfully employed.`);
+        else {
+            let prevJob = document.getElementById('prevJobRole').value.trim();
+            let longestJob = document.getElementById('longestJob').value.trim();
+            let longestDur = document.getElementById('longestDuration').value.trim();
+            let latestJob = document.getElementById('latestJob').value.trim();
+            let latestDur = document.getElementById('latestDuration').value.trim();
+            let quitReasons = document.getElementById('quitReasons').value.trim();
+            let workSentences = [];
+            if(prevJob) workSentences.push(`Previously working as ${prevJob}.`);
+            if(longestJob && longestDur) workSentences.push(`Longest job as ${longestJob}, lasted for ${longestDur}.`);
+            if(latestJob && latestDur) workSentences.push(`Latest job as ${latestJob}, lasted for ${latestDur}.`);
+            if(quitReasons) workSentences.push(`Usually quitted job for the reasons of ${quitReasons}.`);
+            if(workSentences.length) lines.push(...workSentences);
+        }
+        let currStat = document.getElementById('currentStatus').value;
+        let currDetail = document.getElementById('currentStatusDetail').value.trim();
+        if(currStat === 'unemployed' && currDetail) lines.push(`Currently unemployed for ${currDetail}.`);
+        else if(currStat === 'sickleave') lines.push(`Currently on sick leave.`);
+        else if(currStat === 'resigned') lines.push(`Currently just resigned before admission.`);
+        let premorbid = document.getElementById('premorbid').value.trim(); if(premorbid) lines.push(`Premorbid functioning: ${premorbid}.`);
+        // Past Psy Hx
+        let pastType = document.querySelector('input[name="pastPsyType"]:checked')?.value;
+        if(pastType === 'New') lines.push(`Past Psy Hx: New to MHS.`);
+        else if(pastType === 'Private') lines.push(`Past Psy Hx: Known to private psy${document.getElementById('sinceYear').value.trim() ? ` since ${document.getElementById('sinceYear').value.trim()}` : ''}.`);
+        else if(pastType === 'MHS') lines.push(`Past Psy Hx: Known to MHS${document.getElementById('sinceYear').value.trim() ? ` since ${document.getElementById('sinceYear').value.trim()}` : ''}.`);
+        let presented = document.getElementById('presentedWith').value.trim();
+        let precipitated = document.getElementById('precipitatedBy').value.trim();
+        let pastOthers = document.getElementById('pastOthers').value.trim();
+        if(presented) lines.push(`Presented with ${presented}.`);
+        if(precipitated) lines.push(`Precipitated by ${precipitated}.`);
+        if(pastOthers) lines.push(`Others: ${pastOthers}.`);
+        let course = document.getElementById('communityCourse').value;
+        let courseDetail = document.getElementById('courseDetail').value.trim();
+        if(course === 'well_support' && courseDetail) lines.push(`Maintained well in the community with ${courseDetail} support.`);
+        else if(course === 'freq_admissions' && courseDetail) lines.push(`With frequent admissions due to ${courseDetail}.`);
+        // Last Admission
+        let lastHosp = document.getElementById('lastHospital').value;
+        let lastRange = document.getElementById('lastAdmRange').value.trim();
+        let lastReason = document.getElementById('lastAdmReason').value.trim();
+        if(lastHosp && lastRange) lines.push(`Last Admission: to ${lastHosp} ${lastRange}.${lastReason ? ` Reason: ${lastReason}` : ''}`);
+        else if(lastHosp) lines.push(`Last Admission: to ${lastHosp}.`);
+        let currAdmReason = document.getElementById('currentAdmReason').value.trim();
+        if(currAdmReason) lines.push(`Current Admission: Reason: ${currAdmReason}.`);
+        let remarks = document.getElementById('remarksInitial').value.trim();
+        if(remarks) lines.push(`Remarks: ${remarks}.`);
+        return lines.join('\n');
+    }
+
+    document.getElementById('genInitialReport').addEventListener('click',()=>{
+        const report = buildInitialReport();
+        const area = document.getElementById('initialReportArea');
+        const textDiv = document.getElementById('initialReportText');
+        textDiv.innerText = report || 'No data entered. Please fill some fields.';
+        area.style.display = 'block';
+    });
+
+    // PROGRESS report
+    function buildProgressReport(){
+        let parts = [];
+        let date = document.getElementById('progressDate').value.trim();
+        if(date) parts.push(`Progress Note - Date: ${date}`);
+        let subj = document.getElementById('subjective').value.trim(); if(subj) parts.push(`Subjective: ${subj}`);
+        let obj = document.getElementById('objective').value.trim(); if(obj) parts.push(`Objective: ${obj}`);
+        let ass = document.getElementById('assessment').value.trim(); if(ass) parts.push(`Assessment: ${ass}`);
+        let plan = document.getElementById('plan').value.trim(); if(plan) parts.push(`Plan: ${plan}`);
+        return parts.join('\n');
+    }
+    document.getElementById('genProgressReport').addEventListener('click',()=>{
+        const report = buildProgressReport();
+        document.getElementById('progressReportText').innerText = report || 'No progress data.';
+        document.getElementById('progressReportArea').style.display = 'block';
+    });
+
+    // DISCHARGE report
+    function buildDischargeReport(){
+        let out = [];
+        let admDate = document.getElementById('dischargeAdmDate').value.trim();
+        let disDate = document.getElementById('dischargeDate').value.trim();
+        if(admDate && disDate) out.push(`Admission: ${admDate} | Discharge: ${disDate}`);
+        let diag = document.getElementById('dischargeDiagnosis').value.trim(); if(diag) out.push(`Diagnosis: ${diag}`);
+        let reason = document.getElementById('dischargeReason').value.trim(); if(reason) out.push(`Reason for discharge: ${reason}`);
+        let meds = document.getElementById('dischargeMeds').value.trim(); if(meds) out.push(`Medications at discharge: ${meds}`);
+        let follow = document.getElementById('followupPlan').value.trim(); if(follow) out.push(`Follow-up: ${follow}`);
+        let condition = document.getElementById('conditionOnDischarge').value.trim(); if(condition) out.push(`Condition on discharge: ${condition}`);
+        let remarks = document.getElementById('dischargeRemarks').value.trim(); if(remarks) out.push(`Remarks: ${remarks}`);
+        return out.join('\n');
+    }
+    document.getElementById('genDischargeReport').addEventListener('click',()=>{
+        const rep = buildDischargeReport();
+        document.getElementById('dischargeReportText').innerText = rep || 'No discharge data.';
+        document.getElementById('dischargeReportArea').style.display = 'block';
+    });
+
+    // Copy functionality for all copy buttons
+    document.querySelectorAll('.copy-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            const targetId = btn.getAttribute('data-copy');
+            const textElem = document.getElementById(targetId);
+            if(textElem){
+                const text = textElem.innerText;
+                navigator.clipboard.writeText(text).then(()=>{
+                    const original = btn.innerText;
+                    btn.innerText = '✓ Copied!';
+                    setTimeout(()=> btn.innerText = original, 1500);
+                }).catch(()=> alert('Manual copy failed'));
+            }
+        });
+    });
+
+    // Tab switching
+    const tabs = document.querySelectorAll('.tab-btn');
+    const panes = document.querySelectorAll('.tab-pane');
+    tabs.forEach(btn => {
+        btn.addEventListener('click',()=>{
+            const target = btn.getAttribute('data-tab');
+            tabs.forEach(b=>b.classList.remove('active'));
+            btn.classList.add('active');
+            panes.forEach(pane=>pane.classList.remove('active-pane'));
+            document.getElementById(target).classList.add('active-pane');
+        });
+    });
+</script>
+</body>
+</html>
